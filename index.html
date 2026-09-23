@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoldTrading Pro | Institutional Market Structure & Signal Station (XAU/USD)</title>
+    <meta name="description" content="Institutional Market Structure Analysis for Gold (XAU/USD): Algorithmic BOS, CHoCH, Order Blocks, FVGs, Entry Points, Stop Loss, and Take Profit targets.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Application Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+    
+    <!-- TradingView Advanced Real-Time Charting Library -->
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Top Institutional Header -->
+        <header class="header">
+            <div class="brand-section">
+                <div class="brand-logo">Au</div>
+                <div class="brand-title-group">
+                    <h1><span>GOLD</span><span class="highlight">STRUCTURE</span> <span class="badge">SMC PRO v2.4</span></h1>
+                    <p>Institutional Price Action, Order Flow & Live TradingView Mirror</p>
+                </div>
+            </div>
+
+            <!-- Live Gold Ticker & Macro Correlations -->
+            <div class="ticker-section">
+                <div class="live-price-card">
+                    <span class="symbol">XAU/USD</span>
+                    <span class="price" id="headerPrice">$2,654.80</span>
+                    <span class="change-pill positive" id="headerChange">▲ +0.68%</span>
+                </div>
+
+                <!-- Macro Correlation Tape (Gold vs Dollar Index & Yields) -->
+                <div class="macro-correlations">
+                    <div class="macro-pill" title="US Dollar Index (Inverse Gold Correlation)">
+                        <span class="macro-label">DXY</span>
+                        <span class="macro-val" id="dxyVal">101.42</span>
+                        <span class="macro-change neg" id="dxyChange">-0.28%</span>
+                    </div>
+                    <div class="macro-pill" title="US 10-Year Treasury Yield (Real Rate Driver)">
+                        <span class="macro-label">US10Y</span>
+                        <span class="macro-val" id="us10yVal">3.72%</span>
+                        <span class="macro-change neg" id="us10yChange">-0.04</span>
+                    </div>
+                </div>
+
+                <div class="session-pill">
+                    <span class="pulse-dot"></span>
+                    <span id="marketSessionText">London / NY Overlap (Peak Liquidity)</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Secondary Control Bar -->
+        <div class="control-bar">
+            <!-- View Mode Switcher -->
+            <div class="view-mode-group">
+                <span class="bar-label">Monitoring Mode:</span>
+                <button class="view-btn active" data-view="smc" id="btnViewSmc" title="Algorithmic Smart Money Concepts Chart">
+                    <span>⚡</span> SMC Pro
+                </button>
+                <button class="view-btn" data-view="tv" id="btnViewTv" title="Official TradingView Real-Time Live Feed">
+                    <span>📊</span> TradingView Live
+                </button>
+                <button class="view-btn" data-view="split" id="btnViewSplit" title="Dual Monitor / Split Screen Side-by-Side">
+                    <span>🔀</span> Split View
+                </button>
+            </div>
+
+            <!-- Timeframe Selector -->
+            <div class="timeframe-group">
+                <span class="bar-label">Timeframe:</span>
+                <button class="tf-btn" data-tf="1m">1m</button>
+                <button class="tf-btn" data-tf="5m">5m</button>
+                <button class="tf-btn active" data-tf="15m">15m</button>
+                <button class="tf-btn" data-tf="1h">1h</button>
+                <button class="tf-btn" data-tf="4h">4h</button>
+                <button class="tf-btn" data-tf="1d">1D</button>
+            </div>
+
+            <!-- TradingView Live Broker Feed Selector -->
+            <div class="tv-symbol-group" id="tvSymbolGroup" style="display: none;">
+                <span class="bar-label">TV Feed:</span>
+                <select id="tvSymbolSelect" class="scenario-select">
+                    <option value="OANDA:XAUUSD" selected>OANDA: XAU/USD (Spot Gold)</option>
+                    <option value="FOREXCOM:XAUUSD">FOREX.COM: XAU/USD</option>
+                    <option value="BINANCE:PAXGUSDT">BINANCE: PAXG/USDT (Gold Spot)</option>
+                    <option value="TVC:GOLD">TVC: Spot Gold (USD)</option>
+                </select>
+            </div>
+
+            <!-- Market Data Scenario Selector -->
+            <div class="scenario-group" id="scenarioGroup">
+                <span class="bar-label">SMC Scenario:</span>
+                <select id="scenarioSelect" class="scenario-select">
+                    <option value="SCENARIO_BULLISH">⚡ Bullish BOS & Demand OB Continuation</option>
+                    <option value="SCENARIO_BEARISH">🔻 Bearish Liquidity Sweep & CHoCH Reversal</option>
+                    <option value="SCENARIO_RANGE">↔️ Range Consolidation & Golden Pocket</option>
+                    <option value="LIVE_API">🟢 Live Spot Gold (Binance WebSocket 1:1)</option>
+                </select>
+            </div>
+
+            <!-- Live Candle Countdown Timer Badge -->
+            <div class="candle-countdown-pill" id="candleCountdownPill" title="Countdown to current candle close">
+                <span class="pulse-dot-cyan"></span>
+                <span class="countdown-title">Bar Close:</span>
+                <strong id="barCountdownText">--:--</strong>
+            </div>
+
+            <!-- Bar Replay & Live Tick Simulation Controls -->
+            <div class="action-group">
+                <button id="toggleTickBtn" class="pill-btn" title="Toggle Real-time Tick Engine">
+                    <span id="tickIcon">▶</span> <span id="tickText">Live Tick Sim</span>
+                </button>
+                <button id="stepForwardBtn" class="pill-btn" title="Step one candle forward">
+                    <span>⏭</span> Step Bar
+                </button>
+                <button id="resetDataBtn" class="pill-btn" title="Reload & Resync Feeds">
+                    <span>↺</span> Sync
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Trading Dashboard Workstation -->
+        <main class="dashboard-grid">
+            
+            <!-- Left Column: Market Structure Breakdown -->
+            <aside class="col-left">
+                <!-- Structure Overview Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                            Market Structure Bias
+                        </div>
+                        <span class="trend-badge bullish" id="trendBadge">BULLISH</span>
+                    </div>
+
+                    <div class="structure-status-box">
+                        <div class="status-row">
+                            <span class="status-label">Current Phase:</span>
+                            <strong id="structurePhase">Bullish Expansion</strong>
+                        </div>
+                        <div class="status-row">
+                            <span class="status-label">Last Structure Event:</span>
+                            <span id="lastEventBadge" class="structure-tag bos">BOS (Continuation)</span>
+                        </div>
+                        <div class="status-row">
+                            <span class="status-label">Event Price:</span>
+                            <span class="structure-price" id="lastEventPrice">$2,648.20</span>
+                        </div>
+                    </div>
+
+                    <!-- Premium / Discount Dealing Range -->
+                    <div class="range-gauge-container">
+                        <div class="range-labels">
+                            <span>Discount (<50%)</span>
+                            <span id="rangeEqText">EQ: $2,645.00</span>
+                            <span>Premium (>50%)</span>
+                        </div>
+                        <div class="range-bar">
+                            <div class="range-needle" id="rangeNeedle" style="left: 38%;"></div>
+                        </div>
+                        <div class="range-status-text">
+                            <span class="status-label">Current Position:</span>
+                            <span class="zone-tag discount" id="zoneTag">DISCOUNT (38.2%)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Blocks & FVGs Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+                            Institutional Key Zones
+                        </div>
+                        <span style="font-size: 11px; color: var(--text-dim);" id="zonesCount">4 Active</span>
+                    </div>
+
+                    <div class="structure-items-list" id="zonesList">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Swing Highs / Lows (Pivots) -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/></svg>
+                            Structural Swing Points
+                        </div>
+                        <span style="font-size: 11px; color: var(--text-dim);">Fractal N=3</span>
+                    </div>
+
+                    <div class="structure-items-list" id="pivotsList">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Middle Column: Interactive Candlestick Chart -->
+            <section class="col-middle">
+                <div class="card chart-card">
+                    <div class="chart-toolbar">
+                        <div class="chart-tools-left">
+                            <strong style="color: var(--text-main); font-size: 13px;" id="chartHeaderTitle">GOLD / U.S. DOLLAR • 15M (SMC PRO)</strong>
+                            <div class="legend-group" id="smcLegends">
+                                <div class="legend-item">
+                                    <span class="legend-dot" style="background: var(--bullish-green);"></span> Bullish OB
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-dot" style="background: var(--bearish-red);"></span> Bearish OB
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-dot" style="background: var(--cyan-accent);"></span> Entry
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-dot" style="background: #e11d48;"></span> Stop Loss
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-dot" style="background: #10b981;"></span> Take Profit
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chart-tools-right">
+                            <span class="live-pulse-badge" id="chartLiveBadge">
+                                <span class="pulse-dot"></span> LIVE
+                            </span>
+                            <span style="font-size: 11px; color: var(--text-muted);" id="chartInteractionHint">
+                                Scroll to Zoom • Drag to Pan
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Multi-View Chart Wrapper -->
+                    <div class="chart-container-wrapper" id="chartContainer">
+                        <div class="view-wrapper view-smc" id="chartViewWrapper">
+                            <!-- SMC Algorithmic Canvas Pane -->
+                            <div class="pane-smc" id="paneSmc">
+                                <canvas id="chartCanvas"></canvas>
+
+                                <!-- HUD Floating Tooltip -->
+                                <div class="chart-hud" id="chartHud">
+                                    <div class="hud-row">
+                                        <span class="hud-label">DATE:</span>
+                                        <span class="hud-val" id="hudDate">--:--</span>
+                                    </div>
+                                    <div class="hud-row">
+                                        <span class="hud-label">O:</span> <span class="hud-val" id="hudO">0.00</span>
+                                        <span class="hud-label">H:</span> <span class="hud-val" id="hudH">0.00</span>
+                                        <span class="hud-label">L:</span> <span class="hud-val" id="hudL">0.00</span>
+                                        <span class="hud-label">C:</span> <span class="hud-val" id="hudC">0.00</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- TradingView Official Live Feed Pane -->
+                            <div class="pane-tv" id="paneTv">
+                                <div id="tradingview_widget_container" class="tradingview-widget-container"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Column: Institutional Signal Execution Card -->
+            <aside class="col-right">
+                <!-- Main Signal Ticket -->
+                <div class="card signal-card">
+                    <div class="signal-badge-header">
+                        <div class="action-pill buy" id="signalActionPill">
+                            <span id="signalActionIcon">▲</span>
+                            <span id="signalActionText">BUY (LONG)</span>
+                        </div>
+                        <div class="quality-meter">
+                            <div class="quality-score" id="confluenceScore">92%</div>
+                            <div class="quality-label">Setup Confluence</div>
+                        </div>
+                    </div>
+
+                    <!-- Pricing Table -->
+                    <div class="price-levels-box">
+                        <!-- Entry Level -->
+                        <div class="price-row entry">
+                            <div>
+                                <div class="level-name">
+                                    <span style="color: var(--cyan-accent);">●</span> SUGGESTED ENTRY
+                                </div>
+                                <div class="level-sub">Order Block Mitigation / Limit</div>
+                            </div>
+                            <div class="level-price" id="entryPriceDisplay">$2,654.00</div>
+                        </div>
+
+                        <!-- Stop Loss Level -->
+                        <div class="price-row sl">
+                            <div>
+                                <div class="level-name">
+                                    <span style="color: var(--bearish-red);">●</span> STOP LOSS (SL)
+                                </div>
+                                <div class="level-sub" id="slSubtext">Below OB Low + ATR Buffer</div>
+                            </div>
+                            <div class="level-price" style="color: var(--bearish-red);" id="slPriceDisplay">$2,646.50</div>
+                        </div>
+
+                        <!-- TP1 Level -->
+                        <div class="price-row tp1">
+                            <div>
+                                <div class="level-name">
+                                    <span style="color: #34d399;">●</span> TAKE PROFIT 1 (1:1.5)
+                                </div>
+                                <div class="level-sub">Partial Profit & Move SL to BE</div>
+                            </div>
+                            <div class="level-price" id="tp1PriceDisplay">$2,665.25</div>
+                        </div>
+
+                        <!-- TP2 Level -->
+                        <div class="price-row tp2">
+                            <div>
+                                <div class="level-name">
+                                    <span style="color: var(--bullish-green);">●</span> TAKE PROFIT 2 (1:2.5)
+                                </div>
+                                <div class="level-sub">Major Liquidity Swing Target</div>
+                            </div>
+                            <div class="level-price" id="tp2PriceDisplay">$2,672.75</div>
+                        </div>
+
+                        <!-- TP3 Level -->
+                        <div class="price-row tp3">
+                            <div>
+                                <div class="level-name">
+                                    <span style="color: #059669;">●</span> TAKE PROFIT 3 (1:4.0)
+                                </div>
+                                <div class="level-sub">Macro Trend Runner Target</div>
+                            </div>
+                            <div class="level-price" id="tp3PriceDisplay">$2,684.00</div>
+                        </div>
+                    </div>
+
+                    <!-- Position Sizing & Risk Management Calculator -->
+                    <div class="calculator-section">
+                        <div class="calc-title">Position Size & Risk Calculator</div>
+                        <div class="calc-inputs">
+                            <div class="calc-field">
+                                <label for="accountBalance">Account Balance ($):</label>
+                                <input type="number" id="accountBalance" value="10000" step="500">
+                            </div>
+                            <div class="calc-field">
+                                <label for="riskPercent">Risk Percentage (%):</label>
+                                <input type="number" id="riskPercent" value="1.0" step="0.1">
+                            </div>
+                        </div>
+
+                        <div class="calc-results-pill">
+                            <div>
+                                <span style="font-size: 10px; color: var(--text-dim); display: block;">RECOMMENDED LOT:</span>
+                                <span class="lot-value" id="calcLotSize">0.13 Lots</span>
+                            </div>
+                            <div style="text-align: right;">
+                                <span style="font-size: 10px; color: var(--text-dim); display: block;">RISK CAPITAL:</span>
+                                <span style="font-family: var(--font-mono); font-weight: 700; color: #fff;" id="calcRiskDollars">$100.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Copy Signal Button -->
+                    <button class="copy-signal-btn" id="copySignalBtn">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                        Copy Signal for MT4 / MT5 / Telegram
+                    </button>
+
+                    <!-- Confluence Checklist -->
+                    <div style="margin-top: 16px;">
+                        <span style="font-size: 11px; text-transform: uppercase; color: var(--text-dim); font-weight: 700;">Confluence Checklist:</span>
+                        <div class="confluence-list" id="confluenceList">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </main>
+
+        <!-- Bottom Structure Event History Table -->
+        <footer class="log-section">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                        Historical Structure Breaks Log (BOS & CHoCH)
+                    </div>
+                    <span style="font-size: 11px; color: var(--text-dim);">Smart Money Events</span>
+                </div>
+
+                <div class="log-table-wrapper">
+                    <table class="log-table">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Event Type</th>
+                                <th>Direction</th>
+                                <th>Break Level</th>
+                                <th>Origin Structure</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="structureLogBody">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Application Logic Scripts -->
+    <script src="market_structure.js"></script>
+    <script src="data_feed.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
