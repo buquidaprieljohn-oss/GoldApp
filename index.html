@@ -1,731 +1,279 @@
-/* ==========================================================================
-   GoldTrading Pro | Mobile Native SMC Trading App Stylesheet
-   ========================================================================== */
-
-/* --- Root Variables & Theme Configuration --- */
-:root {
-  /* Color Palette - Dark Institutional Mobile Theme */
-  --bg-main: #0b0e14;
-  --bg-card: #121721;
-  --bg-card-hover: #18202e;
-  --bg-input: #1a2232;
-  --border-color: #1e293b;
-  --border-focus: #3b82f6;
-
-  /* Typography Colors */
-  --text-main: #f8fafc;
-  --text-dim: #94a3b8;
-  --text-muted: #64748b;
-
-  /* Accent & Market Directional Colors */
-  --gold-accent: #f59e0b;
-  --gold-glow: rgba(245, 158, 11, 0.2);
-  --cyan-accent: #06b6d4;
-  --cyan-glow: rgba(6, 182, 212, 0.2);
-  --bullish-green: #10b981;
-  --bullish-glow: rgba(16, 185, 129, 0.2);
-  --bearish-red: #ef4444;
-  --bearish-glow: rgba(239, 68, 68, 0.2);
-
-  /* Fonts */
-  --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
-
-  /* Mobile App Spacing, Radius & Safe Areas */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
-  --transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  --bottom-nav-height: 64px;
-  --safe-area-top: env(safe-area-inset-top, 0px);
-  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
-}
-
-/* --- Base & Mobile Reset --- */
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  -webkit-tap-highlight-color: transparent; /* Remove blue highlight on tap */
-}
-
-html, body {
-  width: 100%;
-  height: 100%;
-  overflow-x: hidden;
-  background-color: var(--bg-main);
-  color: var(--text-main);
-  font-family: var(--font-sans);
-  font-size: 13px;
-  line-height: 1.4;
-  -webkit-font-smoothing: antialiased;
-  user-select: none; /* Prevent accidental selection while dragging charts */
-}
-
-/* --- Custom Mobile Scrollbar --- */
-::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
-}
-::-webkit-scrollbar-track {
-  background: var(--bg-main);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--border-color);
-  border-radius: var(--radius-sm);
-}
-
-/* --- App Main Layout Shell --- */
-.app-container {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  min-height: -webkit-fill-available;
-  padding: calc(var(--safe-area-top) + 8px) 8px calc(var(--bottom-nav-height) + var(--safe-area-bottom) + 8px) 8px;
-  gap: 8px;
-  max-width: 100%;
-  margin: 0 auto;
-}
-
-/* --- App Header Bar (Mobile Sticky) --- */
-.header {
-  position: sticky;
-  top: var(--safe-area-top);
-  z-index: 100;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: rgba(18, 23, 33, 0.92);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  padding: 8px 12px;
-  gap: 8px;
-}
-
-.brand-section {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.brand-logo {
-  width: 32px;
-  height: 32px;
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  color: #000;
-  font-weight: 800;
-  font-size: 16px;
-  border-radius: var(--radius-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-mono);
-  box-shadow: 0 0 10px var(--gold-glow);
-}
-
-.brand-title-group h1 {
-  font-size: 14px;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.brand-title-group h1 .highlight {
-  color: var(--gold-accent);
-}
-
-.brand-title-group p {
-  display: none; /* Hidden on standard mobile screens to save vertical space */
-}
-
-.badge {
-  font-size: 9px;
-  background: rgba(245, 158, 11, 0.12);
-  color: var(--gold-accent);
-  border: 1px solid var(--gold-accent);
-  padding: 1px 4px;
-  border-radius: 4px;
-  font-family: var(--font-mono);
-}
-
-/* Header Live Price & Session Status */
-.ticker-section {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.live-price-card {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--bg-input);
-  padding: 4px 8px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border-color);
-}
-
-.live-price-card .symbol {
-  font-weight: 700;
-  font-size: 11px;
-  color: var(--text-dim);
-}
-
-.live-price-card .price {
-  font-family: var(--font-mono);
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text-main);
-}
-
-.change-pill {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  padding: 1px 5px;
-  border-radius: 4px;
-  font-weight: 600;
-}
-.change-pill.positive {
-  background: var(--bullish-glow);
-  color: var(--bullish-green);
-}
-.change-pill.negative {
-  background: var(--bearish-glow);
-  color: var(--bearish-red);
-}
-
-.macro-correlations, .session-pill {
-  display: none; /* Hidden in mobile compact header view */
-}
-
-/* Pulse Animation */
-.pulse-dot, .pulse-dot-cyan {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  animation: pulse 1.5s infinite;
-}
-.pulse-dot { background: var(--bullish-green); box-shadow: 0 0 6px var(--bullish-green); }
-.pulse-dot-cyan { background: var(--cyan-accent); box-shadow: 0 0 6px var(--cyan-accent); }
-
-@keyframes pulse {
-  0% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(1.2); }
-  100% { opacity: 1; transform: scale(1); }
-}
-
-/* --- Mobile Sub-Header & Controls --- */
-.control-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  padding: 6px 8px;
-  gap: 6px;
-  overflow-x: auto;
-  white-space: nowrap;
-}
-
-.bar-label { display: none; }
-
-.timeframe-group, .view-mode-group {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.tf-btn, .view-btn, .pill-btn {
-  background: var(--bg-input);
-  border: 1px solid var(--border-color);
-  color: var(--text-dim);
-  padding: 8px 12px; /* Touch target minimum */
-  border-radius: var(--radius-sm);
-  font-size: 11px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: var(--transition-fast);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.tf-btn.active, .view-btn.active {
-  background: var(--cyan-accent);
-  color: #000;
-  border-color: var(--cyan-accent);
-}
-
-.scenario-select {
-  background: var(--bg-input);
-  border: 1px solid var(--border-color);
-  color: var(--text-main);
-  padding: 6px 8px;
-  border-radius: var(--radius-sm);
-  font-size: 11px;
-  font-family: var(--font-sans);
-  outline: none;
-}
-
-/* --- Dashboard Main Content Area (Mobile Viewport Stack) --- */
-.dashboard-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  flex: 1;
-}
-
-/* --- Mobile Tab View Switching Logic --- */
-.tab-content {
-  display: none; /* Controlled by mobile JS navigation */
-  width: 100%;
-}
-
-.tab-content.active {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-/* --- Base Card Styles --- */
-.card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: 6px;
-}
-
-.card-title {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--text-main);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-/* --- Mobile Chart Workstation --- */
-.chart-card {
-  height: clamp(380px, 55vh, 520px);
-  padding: 6px;
-  display: flex;
-  flex-direction: column;
-}
-
-.chart-toolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 2px 4px 6px 4px;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.chart-tools-left, .chart-tools-right {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.legend-group {
-  display: flex;
-  gap: 6px;
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  font-size: 9px;
-  color: var(--text-dim);
-}
-
-.legend-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 2px;
-}
-
-.chart-container-wrapper {
-  position: relative;
-  flex: 1;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background: var(--bg-main);
-  border-radius: var(--radius-sm);
-  touch-action: none; /* Prevents viewport scroll while dragging chart canvas */
-}
-
-canvas#chartCanvas {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-
-/* Floating Chart HUD for Touch Displays */
-.chart-hud {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  background: rgba(18, 23, 33, 0.9);
-  backdrop-filter: blur(6px);
-  border: 1px solid var(--border-color);
-  padding: 4px 8px;
-  border-radius: var(--radius-sm);
-  font-family: var(--font-mono);
-  font-size: 10px;
-  pointer-events: none;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.hud-row { display: flex; gap: 6px; }
-.hud-label { color: var(--text-muted); }
-.hud-val { color: var(--cyan-accent); font-weight: 600; }
-
-/* --- SMC Structure Component Styles --- */
-.trend-badge {
-  font-size: 9px;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-weight: 700;
-  font-family: var(--font-mono);
-}
-.trend-badge.bullish { background: var(--bullish-glow); color: var(--bullish-green); border: 1px solid var(--bullish-green); }
-.trend-badge.bearish { background: var(--bearish-glow); color: var(--bearish-red); border: 1px solid var(--bearish-red); }
-
-.structure-status-box {
-  background: var(--bg-input);
-  border-radius: var(--radius-sm);
-  padding: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.status-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 11px;
-}
-
-.status-label { color: var(--text-dim); }
-
-.structure-tag {
-  padding: 1px 5px;
-  border-radius: 3px;
-  font-size: 9px;
-  font-family: var(--font-mono);
-  font-weight: 700;
-}
-.structure-tag.bos { background: rgba(6, 182, 212, 0.15); color: var(--cyan-accent); }
-.structure-tag.choch { background: rgba(245, 158, 11, 0.15); color: var(--gold-accent); }
-
-/* Premium/Discount Gauge */
-.range-gauge-container {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.range-labels {
-  display: flex;
-  justify-content: space-between;
-  font-size: 9px;
-  color: var(--text-muted);
-  font-family: var(--font-mono);
-}
-
-.range-bar {
-  height: 6px;
-  background: linear-gradient(90deg, var(--bullish-green) 0%, var(--gold-accent) 50%, var(--bearish-red) 100%);
-  border-radius: 3px;
-  position: relative;
-}
-
-.range-needle {
-  position: absolute;
-  top: -3px;
-  width: 4px;
-  height: 12px;
-  background: #fff;
-  border-radius: 2px;
-  box-shadow: 0 0 4px #000;
-  transform: translateX(-50%);
-}
-
-.structure-items-list {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  max-height: 180px;
-  overflow-y: auto;
-}
-
-.zone-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: var(--bg-input);
-  padding: 6px 8px;
-  border-radius: var(--radius-sm);
-  font-size: 10px;
-  font-family: var(--font-mono);
-  border-left: 3px solid var(--border-color);
-}
-.zone-item.bullish-ob { border-left-color: var(--bullish-green); }
-.zone-item.bearish-ob { border-left-color: var(--bearish-red); }
-.zone-item.fvg { border-left-color: var(--gold-accent); }
-
-/* --- Mobile Signal Execution & Action Sheet --- */
-.signal-badge-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: var(--bg-input);
-  padding: 8px 10px;
-  border-radius: var(--radius-sm);
-}
-
-.action-pill {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-weight: 800;
-  font-size: 13px;
-  padding: 4px 8px;
-  border-radius: var(--radius-sm);
-  font-family: var(--font-mono);
-}
-.action-pill.buy { background: var(--bullish-glow); color: var(--bullish-green); border: 1px solid var(--bullish-green); }
-.action-pill.sell { background: var(--bearish-glow); color: var(--bearish-red); border: 1px solid var(--bearish-red); }
-
-.quality-score { font-family: var(--font-mono); font-size: 14px; font-weight: 800; color: var(--gold-accent); }
-.quality-label { font-size: 8px; color: var(--text-muted); text-transform: uppercase; }
-
-/* Price Levels Cards */
-.price-levels-box {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.price-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px;
-  border-radius: var(--radius-sm);
-  background: var(--bg-input);
-  border-left: 3px solid var(--border-color);
-}
-.price-row.entry { border-left-color: var(--cyan-accent); }
-.price-row.sl { border-left-color: var(--bearish-red); }
-.price-row.tp1, .price-row.tp2, .price-row.tp3 { border-left-color: var(--bullish-green); }
-
-.level-name { font-size: 10px; font-weight: 700; display: flex; align-items: center; gap: 4px; }
-.level-sub { font-size: 9px; color: var(--text-muted); }
-.level-price { font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--text-main); }
-
-/* Position Size Touch Controls */
-.calculator-section {
-  background: var(--bg-input);
-  border-radius: var(--radius-sm);
-  padding: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.calc-inputs { display: flex; gap: 6px; }
-.calc-field { flex: 1; display: flex; flex-direction: column; gap: 3px; }
-.calc-field label { font-size: 9px; color: var(--text-muted); }
-.calc-field input {
-  background: var(--bg-main);
-  border: 1px solid var(--border-color);
-  color: var(--text-main);
-  padding: 8px; /* Touch target enhancement */
-  border-radius: var(--radius-sm);
-  font-family: var(--font-mono);
-  font-size: 12px;
-  outline: none;
-}
-
-.copy-signal-btn {
-  width: 100%;
-  min-height: 44px; /* Mobile accessibility standard */
-  background: linear-gradient(135deg, var(--cyan-accent), #0284c7);
-  color: #000;
-  border: none;
-  padding: 10px;
-  border-radius: var(--radius-sm);
-  font-weight: 800;
-  font-size: 12px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  transition: var(--transition-fast);
-}
-
-.copy-signal-btn:active {
-  transform: scale(0.98);
-  opacity: 0.9;
-}
-
-/* --- Mobile Bottom Navigation Bar --- */
-.mobile-nav-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: calc(var(--bottom-nav-height) + var(--safe-area-bottom));
-  padding-bottom: var(--safe-area-bottom);
-  background: rgba(18, 23, 33, 0.95);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-top: 1px solid var(--border-color);
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  z-index: 1000;
-}
-
-.nav-tab {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  flex: 1;
-  height: 100%;
-  color: var(--text-muted);
-  font-size: 10px;
-  font-weight: 600;
-  text-decoration: none;
-  background: none;
-  border: none;
-  cursor: pointer;
-  transition: var(--transition-fast);
-}
-
-.nav-tab svg, .nav-tab .icon {
-  width: 20px;
-  height: 20px;
-  fill: currentColor;
-}
-
-.nav-tab.active {
-  color: var(--cyan-accent);
-}
-
-.nav-tab.active::after {
-  content: '';
-  width: 12px;
-  height: 2px;
-  background: var(--cyan-accent);
-  border-radius: 2px;
-  margin-top: 1px;
-}
-
-/* --- Touch Toast Notifications --- */
-.toast-container {
-  position: fixed;
-  top: calc(var(--safe-area-top) + 56px);
-  left: 12px;
-  right: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  z-index: 9999;
-  pointer-events: none;
-}
-
-.toast {
-  pointer-events: auto;
-  background: var(--bg-card);
-  color: var(--text-main);
-  border: 1px solid var(--cyan-accent);
-  padding: 10px 12px;
-  border-radius: var(--radius-sm);
-  font-size: 11px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
-  animation: slideDown 0.25s cubic-bezier(0.1, 0.9, 0.2, 1);
-}
-
-@keyframes slideDown {
-  from { transform: translateY(-20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-/* ==========================================================================
-   Desktop & Tablet Adaptive Breakpoints
-   ========================================================================== */
-
-/* Tablet Optimization (min-width: 768px) */
-@media (min-width: 768px) {
-  .app-container {
-    padding: 12px;
-    padding-bottom: 12px;
-  }
-
-  .mobile-nav-bar {
-    display: none; /* Hide bottom navbar on larger displays */
-  }
-
-  .brand-title-group p {
-    display: block;
-  }
-
-  .macro-correlations, .session-pill {
-    display: flex;
-  }
-
-  .tab-content {
-    display: flex !important; /* Show all grids side-by-side on desktop */
-  }
-
-  .dashboard-grid {
-    display: grid;
-    grid-template-columns: 260px 1fr;
-  }
-
-  .col-signals {
-    grid-column: span 2;
-  }
-}
-
-/* Desktop Optimization (min-width: 1200px) */
-@media (min-width: 1200px) {
-  .dashboard-grid {
-    grid-template-columns: 280px 1fr 320px;
-  }
-
-  .col-signals {
-    grid-column: span 1;
-  }
-
-  .chart-card {
-    height: 620px;
-  }
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>GOLDSTRUCTURE SMC PRO v2.4</title>
+  
+  <!-- Font Imports -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Link to external CSS stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- Top Mobile Sticky Header -->
+    <header class="header">
+      <div class="brand-section">
+        <div class="brand-logo">Au</div>
+        <div class="brand-title-group">
+          <h1>GOLDSTRUCTURE <span class="highlight">SMC PRO</span></h1>
+          <p>Institutional Price Action & Order Flow</p>
+        </div>
+      </div>
+      
+      <div class="ticker-section">
+        <div class="live-price-card">
+          <span class="symbol">XAUUSD</span>
+          <span class="price">$2,654.80</span>
+          <span class="change-pill positive">+0.68%</span>
+        </div>
+        <div class="session-pill">
+          <span class="pulse-dot"></span>
+          <span>NY / London Overlap</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Sub-Header Controls -->
+    <div class="control-bar">
+      <div class="timeframe-group">
+        <button class="tf-btn">1m</button>
+        <button class="tf-btn">5m</button>
+        <button class="tf-btn active">15m</button>
+        <button class="tf-btn">1h</button>
+        <button class="tf-btn">4h</button>
+      </div>
+
+      <select class="scenario-select">
+        <option>⚡ Bullish BOS & Demand OB</option>
+        <option>🔻 Bearish CHoCH & Supply OB</option>
+      </select>
+
+      <div class="view-mode-group">
+        <button class="view-btn active">SMC</button>
+        <button class="view-btn">TV</button>
+      </div>
+    </div>
+
+    <!-- Main Mobile Content Area -->
+    <main class="dashboard-grid">
+
+      <!-- TAB 1: CHART VIEW (Active by default) -->
+      <section id="tab-chart" class="tab-content active">
+        <div class="card chart-card">
+          <div class="chart-toolbar">
+            <div class="chart-tools-left">
+              <span class="card-title">GOLD / U.S. DOLLAR • 15M</span>
+            </div>
+            <div class="legend-group">
+              <div class="legend-item">
+                <span class="legend-dot" style="background: var(--bullish-green)"></span>
+                <span>Bullish OB</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background: var(--bearish-red)"></span>
+                <span>Bearish OB</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="chart-container-wrapper">
+            <canvas id="chartCanvas"></canvas>
+            
+            <div class="chart-hud">
+              <div class="hud-row"><span class="hud-label">O:</span><span class="hud-val">2,648.10</span></div>
+              <div class="hud-row"><span class="hud-label">H:</span><span class="hud-val">2,656.40</span></div>
+              <div class="hud-row"><span class="hud-label">L:</span><span class="hud-val">2,645.00</span></div>
+              <div class="hud-row"><span class="hud-label">C:</span><span class="hud-val">2,654.80</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: SMC STRUCTURE VIEW -->
+      <section id="tab-structure" class="tab-content">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Market Structure Bias</span>
+            <span class="trend-badge bullish">BULLISH</span>
+          </div>
+
+          <div class="structure-status-box">
+            <div class="status-row">
+              <span class="status-label">Current Phase:</span>
+              <span class="status-val" style="color: var(--bullish-green); font-weight: 700;">Bullish Expansion</span>
+            </div>
+            <div class="status-row">
+              <span class="status-label">Last Structure Event:</span>
+              <span class="structure-tag bos">BOS (Continuation)</span>
+            </div>
+            <div class="status-row">
+              <span class="status-label">Event Price:</span>
+              <span class="structure-price">$2,648.20</span>
+            </div>
+          </div>
+
+          <!-- Premium / Discount Gauge -->
+          <div class="range-gauge-container">
+            <div class="range-labels">
+              <span>Discount (&lt;50%)</span>
+              <span>EQ: $2,645.00</span>
+              <span>Premium (&gt;50%)</span>
+            </div>
+            <div class="range-bar">
+              <div class="range-needle" style="left: 38.2%;"></div>
+            </div>
+            <div class="status-row" style="margin-top: 4px;">
+              <span class="status-label">Current Location:</span>
+              <span class="zone-tag discount">DISCOUNT (38.2%)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Institutional Key Zones</span>
+            <span class="badge">4 Active</span>
+          </div>
+          <div class="structure-items-list">
+            <div class="zone-item bullish-ob">
+              <span>15M Demand Order Block</span>
+              <span>$2,642.10 - $2,645.00</span>
+            </div>
+            <div class="zone-item fvg">
+              <span>15M Fair Value Gap</span>
+              <span>$2,649.50 - $2,651.20</span>
+            </div>
+            <div class="zone-item bearish-ob">
+              <span>1H Supply Order Block</span>
+              <span>$2,668.00 - $2,672.40</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: SIGNALS & POSITIONS VIEW -->
+      <section id="tab-signals" class="tab-content col-signals">
+        <div class="card">
+          <div class="signal-badge-header">
+            <div class="action-pill buy">
+              <span>BUY</span>
+              <span>LIMIT</span>
+            </div>
+            <div class="quality-meter">
+              <div class="quality-score">A+ (92%)</div>
+              <div class="quality-label">Signal Quality</div>
+            </div>
+          </div>
+
+          <div class="price-levels-box">
+            <div class="price-row entry">
+              <div>
+                <div class="level-name">Entry Price</div>
+                <div class="level-sub">Demand OB Retest</div>
+              </div>
+              <div class="level-price">$2,645.00</div>
+            </div>
+
+            <div class="price-row sl">
+              <div>
+                <div class="level-name">Stop Loss</div>
+                <div class="level-sub">Below Swing Low</div>
+              </div>
+              <div class="level-price">$2,638.50</div>
+            </div>
+
+            <div class="price-row tp1">
+              <div>
+                <div class="level-name">Take Profit 1</div>
+                <div class="level-sub">1:2 R:R (50% Close)</div>
+              </div>
+              <div class="level-price">$2,658.00</div>
+            </div>
+
+            <div class="price-row tp2">
+              <div>
+                <div class="level-name">Take Profit 2</div>
+                <div class="level-sub">Equal Highs Target</div>
+              </div>
+              <div class="level-price">$2,668.00</div>
+            </div>
+          </div>
+
+          <!-- Position Size Calculator -->
+          <div class="calculator-section">
+            <span class="calc-title">Position Calculator</span>
+            <div class="calc-inputs">
+              <div class="calc-field">
+                <label>Account ($)</label>
+                <input type="number" value="10000">
+              </div>
+              <div class="calc-field">
+                <label>Risk (%)</label>
+                <input type="number" value="1" step="0.5">
+              </div>
+            </div>
+            <div class="calc-results-pill">
+              <span style="color: var(--text-dim); font-size: 11px;">Recommended Lot:</span>
+              <span class="lot-value">0.15 Lots</span>
+            </div>
+          </div>
+
+          <button class="copy-signal-btn" onclick="copySignalData()">
+            📋 Copy Signal Parameters
+          </button>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Mobile Navigation Tab Bar -->
+    <nav class="mobile-nav-bar">
+      <button class="nav-tab active" onclick="switchTab('tab-chart', this)">
+        <svg viewBox="0 0 24 24"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.09-4-4L2 15.66z"/></svg>
+        <span>Chart</span>
+      </button>
+      <button class="nav-tab" onclick="switchTab('tab-structure', this)">
+        <svg viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>
+        <span>Structure</span>
+      </button>
+      <button class="nav-tab" onclick="switchTab('tab-signals', this)">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+        <span>Signal</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <!-- Mobile Tab Switch Script -->
+  <script>
+    function switchTab(tabId, el) {
+      // Hide all tabs
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      // Show selected tab
+      document.getElementById(tabId).classList.add('active');
+      
+      // Update nav button states
+      document.querySelectorAll('.nav-tab').forEach(nav => {
+        nav.classList.remove('active');
+      });
+      el.classList.add('active');
+    }
+
+    function copySignalData() {
+      const text = "XAUUSD BUY LIMIT @ 2645.00 | SL: 2638.50 | TP1: 2658.00 | TP2: 2668.00";
+      navigator.clipboard.writeText(text);
+      alert("Signal Copied to Clipboard!");
+    }
+  </script>
+
+</body>
+</html>
